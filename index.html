@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Swaminarayan Mandir Registration Form</title>
+  <style>
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: linear-gradient(90deg, #f59e0b, #ea580c, #b91c1c);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 700px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 32px;
+      border-top: 6px solid #0b5cab;
+    }
+    .logo {
+      text-align: center;
+      font-size: 14px;
+      color: #0b5cab;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    h1 {
+      text-align: center;
+      margin: 0 0 24px;
+      color: #1f2937;
+      font-size: 28px;
+    }
+    .row { margin-bottom: 16px; }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #374151;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    .phone-group {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 12px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #0b5cab;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover { opacity: 0.95; }
+    small {
+      color: #dc2626;
+      min-height: 18px;
+      display: block;
+      margin-top: 4px;
+    }
+    @media (max-width: 700px) {
+      .phone-group { grid-template-columns: 1fr; }
+      .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="text-align:center; margin-bottom:12px; color:#ea580c; font-weight:700; font-size:13px; letter-spacing:1px;">Temple & Community Registration</div>
+    <div class="logo">Swaminarayan Mandir</div>
+    <h1>Swaminarayan Mandir Registration Form</h1>
+
+    <form onsubmit="submitForm(event)">
+      <div class="row">
+        <label>Full Name</label>
+        <input type="text" id="name" required />
+      </div>
+
+      <div class="row">
+        <label>Date of Birth</label>
+        <input type="date" id="dob" required />
+      </div>
+
+      <div class="row">
+        <label>Email</label>
+        <input type="email" id="email" required />
+      </div>
+
+      <div class="row">
+        <label>Phone Number</label>
+        <div class="phone-group">
+          <input type="text" id="phoneCountry" list="countryCodes" placeholder="Search country" required />
+          <datalist id="countryCodes">
+            <option value="🇳🇿 New Zealand (+64)">
+            <option value="🇦🇺 Australia (+61)">
+            <option value="🇺🇸 United States (+1)">
+            <option value="🇬🇧 United Kingdom (+44)">
+            <option value="🇮🇳 India (+91)">
+          </datalist>
+          <input type="tel" id="phone" placeholder="Phone number" required />
+        </div>
+      </div>
+
+      <div class="row">
+        <label>Parent / Guardian Name</label>
+        <input type="text" id="guardian" placeholder="Enter guardian name" required />
+      </div>
+
+      <div class="row">
+        <label>Emergency Contact</label>
+        <input type="tel" id="emergency" placeholder="Emergency phone number" required />
+      </div>
+
+      <div class="row">
+        <label>Address</label>
+        <input type="text" id="address" required />
+      </div>
+
+      <button type="submit">Submit Registration</button>
+    </form>
+  </div>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzPVcgP-EQjvNEzHykpK98Hdb5w7QliVXtljytPQNND1vYaUrMieyk4Ch634U0PnZmz/exec";
+
+    function submitForm(e) {
+      e.preventDefault();
+
+      const data = {
+        name: document.getElementById("name").value,
+        dob: document.getElementById("dob").value,
+        email: document.getElementById("email").value,
+        country: document.getElementById("phoneCountry").value,
+        phone: document.getElementById("phone").value,
+        guardian: document.getElementById("guardian").value,
+        emergency: document.getElementById("emergency").value,
+        address: document.getElementById("address").value
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(data)
+      });
+
+      alert("Registration submitted successfully for Swaminarayan Mandir 🙏");
+      document.querySelector("form").reset();
+    }
+  </script>
+</body>
+</html>
