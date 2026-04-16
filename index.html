@@ -167,16 +167,10 @@
 <script>
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyEMIB4exeBKWfXtYy7yB21Rc2hrDhtd_SHiaTUs_gzOMlm4VxS3zt-_9MrGq00CfJa/exec";
 
-const fieldMap = {
-  name: document.getElementById("name"),
-  dob: document.getElementById("dob"),
-  email: document.getElementById("email"),
-  phoneCountry: document.getElementById("phoneCountry"),
-  phone: document.getElementById("phone"),
-  guardian: document.getElementById("guardian"),
-  emergency: document.getElementById("emergency"),
-  address: document.getElementById("address")
-};
+function getValue(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : "";
+}
 
 function setError(fieldName, message) {
   const errorEl = document.getElementById(fieldName + "Error");
@@ -184,15 +178,8 @@ function setError(fieldName, message) {
 }
 
 function clearErrors() {
-  [
-    "name",
-    "dob",
-    "email",
-    "phone",
-    "guardian",
-    "emergency",
-    "address"
-  ].forEach(field => {
+  const fields = ["name", "dob", "email", "phone", "guardian", "emergency", "address"];
+  fields.forEach(field => {
     const errorEl = document.getElementById(field + "Error");
     if (errorEl) errorEl.textContent = "";
   });
@@ -202,77 +189,52 @@ function validateForm() {
   clearErrors();
   let valid = true;
 
-  const name = fieldMap.name.value.trim();
-  const dob = fieldMap.dob.value;
-  const email = fieldMap.email.value.trim();
-  const phoneCountry = fieldMap.phoneCountry.value.trim();
-  const phone = fieldMap.phone.value.trim();
-  const guardian = fieldMap.guardian.value.trim();
-  const emergency = fieldMap.emergency.value.trim();
-  const address = fieldMap.address.value.trim();
+  const name = getValue("name");
+  const dob = getValue("dob");
+  const email = getValue("email");
+  const country = getValue("phoneCountry");
+  const phone = getValue("phone");
+  const guardian = getValue("guardian");
+  const emergency = getValue("emergency");
+  const address = getValue("address");
 
-  // Full Name: must be first + last name, letters only
   if (!/^[A-Za-z\s]{3,}$/.test(name) || name.split(" ").length < 2) {
     setError("name", "Enter full first and last name.");
     valid = false;
   }
 
-  // Date of Birth: required + age check
   if (!dob) {
     setError("dob", "Enter date of birth.");
     valid = false;
-  } else {
-    const birthDate = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-
-    if (age < 5 || age > 100) {
-      setError("dob", "Enter a valid age between 5 and 100.");
-      valid = false;
-    }
   }
 
-  // Email validation
   if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) {
-    setError("email", "Enter a valid email address.");
+    setError("email", "Enter a valid email.");
     valid = false;
   }
 
-  // Country
-  if (!phoneCountry) {
+  if (!country) {
     setError("phone", "Select a country.");
     valid = false;
   }
 
-  // Phone number: digits only, 7-15
   if (!/^\d{7,15}$/.test(phone)) {
-    setError("phone", "Phone number must be 7–15 digits.");
+    setError("phone", "Enter 7–15 digits.");
     valid = false;
   }
 
-  // Guardian name
-  if (!/^[A-Za-z\s]{3,}$/.test(guardian)) {
+  if (guardian && !/^[A-Za-z\s]{3,}$/.test(guardian)) {
     setError("guardian", "Enter a valid guardian name.");
     valid = false;
   }
 
-  // Emergency contact
-  if (!/^\d{7,15}$/.test(emergency)) {
-    setError("emergency", "Emergency contact must be 7–15 digits.");
+  if (emergency && !/^\d{7,15}$/.test(emergency)) {
+    setError("emergency", "Enter valid emergency number.");
     valid = false;
   }
 
-  // Address
   if (address.length < 5) {
-    setError("address", "Enter a full address.");
+    setError("address", "Enter full address.");
     valid = false;
   }
 
@@ -285,14 +247,14 @@ function submitForm(e) {
   if (!validateForm()) return;
 
   const data = {
-    name: fieldMap.name.value.trim(),
-    dob: fieldMap.dob.value,
-    email: fieldMap.email.value.trim(),
-    country: fieldMap.phoneCountry.value.trim(),
-    phone: fieldMap.phone.value.trim(),
-    guardian: fieldMap.guardian.value.trim(),
-    emergency: fieldMap.emergency.value.trim(),
-    address: fieldMap.address.value.trim()
+    name: getValue("name"),
+    dob: getValue("dob"),
+    email: getValue("email"),
+    country: getValue("phoneCountry"),
+    phone: getValue("phone"),
+    guardian: getValue("guardian"),
+    emergency: getValue("emergency"),
+    address: getValue("address")
   };
 
   fetch(GOOGLE_SCRIPT_URL, {
@@ -308,8 +270,8 @@ function submitForm(e) {
       justify-content:center;
       align-items:center;
       background:#f4f6f8;
-      padding:20px;
       font-family:Arial, sans-serif;
+      padding:20px;
     ">
       <div style="
         width:100%;
@@ -321,24 +283,12 @@ function submitForm(e) {
         border-top:6px solid #0b5cab;
         text-align:center;
       ">
-        <h1 style="
-          color:#1f2937;
-          margin-bottom:16px;
-          font-size:32px;
-        ">
-          Thank You 🙏
-        </h1>
-
-        <p style="
-          color:#374151;
-          font-size:18px;
-          line-height:1.6;
-        ">
+        <h1 style="font-size:32px; color:#1f2937;">Thank You 🙏</h1>
+        <p style="font-size:18px; color:#374151;">
           Your registration has been submitted successfully.
         </p>
-
         <button onclick="location.reload()" style="
-          margin-top:24px;
+          margin-top:20px;
           padding:14px 24px;
           border:none;
           border-radius:10px;
