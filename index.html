@@ -167,18 +167,102 @@
  <script>
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyEMIB4exeBKWfXtYy7yB21Rc2hrDhtd_SHiaTUs_gzOMlm4VxS3zt-_9MrGq00CfJa/exec";
 
-function submit (e) {
+const fieldMap = {
+  name: document.getElementById("name"),
+  dob: document.getElementById("dob"),
+  email: document.getElementById("email"),
+  phoneCountry: document.getElementById("phoneCountry"),
+  phone: document.getElementById("phone"),
+  guardian: document.getElementById("guardian"),
+  emergency: document.getElementById("emergency"),
+  address: document.getElementById("address")
+};
+
+function setError(fieldName, message) {
+  const errorEl = document.getElementById(fieldName + "Error");
+  if (errorEl) errorEl.textContent = message;
+}
+
+function clearErrors() {
+  [
+    "name",
+    "dob",
+    "email",
+    "phone",
+    "guardian",
+    "emergency",
+    "address"
+  ].forEach(field => {
+    const errorEl = document.getElementById(field + "Error");
+    if (errorEl) errorEl.textContent = "";
+  });
+}
+
+function isValidEmail(email) {
+  return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
+}
+
+function validateForm() {
+  clearErrors();
+  let valid = true;
+
+  if (fieldMap.name.value.trim().length < 2) {
+    setError("name", "Enter a valid full name.");
+    valid = false;
+  }
+
+  if (!fieldMap.dob.value) {
+    setError("dob", "Enter date of birth.");
+    valid = false;
+  }
+
+  if (!isValidEmail(fieldMap.email.value.trim())) {
+    setError("email", "Enter a valid email.");
+    valid = false;
+  }
+
+  if (!fieldMap.phoneCountry.value.trim()) {
+    setError("phone", "Select a country.");
+    valid = false;
+  }
+
+  if (!fieldMap.phone.value.trim()) {
+    setError("phone", "Enter phone number.");
+    valid = false;
+  }
+
+  if (!fieldMap.guardian.value.trim()) {
+    setError("guardian", "Enter guardian name.");
+    valid = false;
+  }
+
+  if (!fieldMap.emergency.value.trim()) {
+    setError("emergency", "Enter emergency contact.");
+    valid = false;
+  }
+
+  if (!fieldMap.address.value.trim()) {
+    setError("address", "Enter address.");
+    valid = false;
+  }
+
+  return valid;
+}
+
+function submitForm(e) {
   e.preventDefault();
 
+  if (!validateForm()) return;
+
   const data = {
-    name: document.getElementById("name").value,
-    dob: document.getElementById("dob").value,
-    email: document.getElementById("email").value,
-    country: document.getElementById("phoneCountry").value,
-    phone: document.getElementById("phone").value,
-    guardian: document.getElementById("guardian").value,
-    emergency: document.getElementById("emergency").value,
-    address: document.getElementById("address").value
+    name: fieldMap.name.value.trim(),
+    dob: fieldMap.dob.value,
+    email: fieldMap.email.value.trim(),
+    country: fieldMap.phoneCountry.value,
+    phone: fieldMap.phone.value.trim(),
+    guardian: fieldMap.guardian.value.trim(),
+    emergency: fieldMap.emergency.value.trim(),
+    address: fieldMap.address.value.trim()
   };
 
   fetch(GOOGLE_SCRIPT_URL, {
@@ -207,38 +291,13 @@ function submit (e) {
         border-top:6px solid #0b5cab;
         text-align:center;
       ">
-        <div style="
-          color:#ea580c;
-          font-weight:700;
-          font-size:13px;
-          letter-spacing:1px;
-          margin-bottom:12px;
-        ">
-          Temple & Community Registration
-        </div>
-
-        <h1 style="
-          color:#1f2937;
-          margin-bottom:16px;
-          font-size:32px;
-        ">
+        <h1 style="color:#1f2937; margin-bottom:16px; font-size:32px;">
           Thank You 🙏
         </h1>
 
-        <p style="
-  color:#374151;
-  font-size:18px;
-  line-height:1.6;
-">
-  Your registration has been submitted successfully.
-</p>
-
-<p style="
-  color:#6b7280;
-  margin-top:12px;
-">
-  Thank you for completing the community registration form.
-</p>
+        <p style="color:#374151; font-size:18px; line-height:1.6;">
+          Your registration has been submitted successfully.
+        </p>
 
         <button onclick="location.reload()" style="
           margin-top:24px;
