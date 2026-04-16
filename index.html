@@ -164,7 +164,7 @@
     </form>
   </div>
 
- <script>
+<script>
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyEMIB4exeBKWfXtYy7yB21Rc2hrDhtd_SHiaTUs_gzOMlm4VxS3zt-_9MrGq00CfJa/exec";
 
 const fieldMap = {
@@ -198,51 +198,81 @@ function clearErrors() {
   });
 }
 
-function isValidEmail(email) {
-  return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email);
-}
-
 function validateForm() {
   clearErrors();
   let valid = true;
 
-  if (fieldMap.name.value.trim().length < 2) {
-    setError("name", "Enter a valid full name.");
+  const name = fieldMap.name.value.trim();
+  const dob = fieldMap.dob.value;
+  const email = fieldMap.email.value.trim();
+  const phoneCountry = fieldMap.phoneCountry.value.trim();
+  const phone = fieldMap.phone.value.trim();
+  const guardian = fieldMap.guardian.value.trim();
+  const emergency = fieldMap.emergency.value.trim();
+  const address = fieldMap.address.value.trim();
+
+  // Full Name: must be first + last name, letters only
+  if (!/^[A-Za-z\s]{3,}$/.test(name) || name.split(" ").length < 2) {
+    setError("name", "Enter full first and last name.");
     valid = false;
   }
 
-  if (!fieldMap.dob.value) {
+  // Date of Birth: required + age check
+  if (!dob) {
     setError("dob", "Enter date of birth.");
     valid = false;
+  } else {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    if (age < 5 || age > 100) {
+      setError("dob", "Enter a valid age between 5 and 100.");
+      valid = false;
+    }
   }
 
-  if (!isValidEmail(fieldMap.email.value.trim())) {
-    setError("email", "Enter a valid email.");
+  // Email validation
+  if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email)) {
+    setError("email", "Enter a valid email address.");
     valid = false;
   }
 
-  if (!fieldMap.phoneCountry.value.trim()) {
+  // Country
+  if (!phoneCountry) {
     setError("phone", "Select a country.");
     valid = false;
   }
 
-  if (!fieldMap.phone.value.trim()) {
-    setError("phone", "Enter phone number.");
+  // Phone number: digits only, 7-15
+  if (!/^\d{7,15}$/.test(phone)) {
+    setError("phone", "Phone number must be 7–15 digits.");
     valid = false;
   }
 
-  if (!fieldMap.guardian.value.trim()) {
-    setError("guardian", "Enter guardian name.");
+  // Guardian name
+  if (!/^[A-Za-z\s]{3,}$/.test(guardian)) {
+    setError("guardian", "Enter a valid guardian name.");
     valid = false;
   }
 
-  if (!fieldMap.emergency.value.trim()) {
-    setError("emergency", "Enter emergency contact.");
+  // Emergency contact
+  if (!/^\d{7,15}$/.test(emergency)) {
+    setError("emergency", "Emergency contact must be 7–15 digits.");
     valid = false;
   }
 
-  if (!fieldMap.address.value.trim()) {
-    setError("address", "Enter address.");
+  // Address
+  if (address.length < 5) {
+    setError("address", "Enter a full address.");
     valid = false;
   }
 
@@ -258,7 +288,7 @@ function submitForm(e) {
     name: fieldMap.name.value.trim(),
     dob: fieldMap.dob.value,
     email: fieldMap.email.value.trim(),
-    country: fieldMap.phoneCountry.value,
+    country: fieldMap.phoneCountry.value.trim(),
     phone: fieldMap.phone.value.trim(),
     guardian: fieldMap.guardian.value.trim(),
     emergency: fieldMap.emergency.value.trim(),
@@ -291,11 +321,19 @@ function submitForm(e) {
         border-top:6px solid #0b5cab;
         text-align:center;
       ">
-        <h1 style="color:#1f2937; margin-bottom:16px; font-size:32px;">
+        <h1 style="
+          color:#1f2937;
+          margin-bottom:16px;
+          font-size:32px;
+        ">
           Thank You 🙏
         </h1>
 
-        <p style="color:#374151; font-size:18px; line-height:1.6;">
+        <p style="
+          color:#374151;
+          font-size:18px;
+          line-height:1.6;
+        ">
           Your registration has been submitted successfully.
         </p>
 
